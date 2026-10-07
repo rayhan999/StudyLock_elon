@@ -1,0 +1,3 @@
+<resources>
+  <string name="studylock_accessibility_description">StudyLock uses this to see which app is open, so it can send you back to StudyLock when you open a locked app before finishing your daily study goal. Nothing is recorded or sent anywhere.</string>
+</resources>

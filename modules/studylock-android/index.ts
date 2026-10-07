@@ -1,0 +1,18 @@
+import { requireNativeModule } from "expo";
+
+export type AppInfo = { packageName: string; label: string };
+export type Config = { goal: number; study: string[]; allowed: string[]; setup: boolean };
+
+type StudyLockAndroid = {
+  listApps(): AppInfo[];
+  getConfig(): Config;
+  setConfig(goal: number, study: string[], allowed: string[]): void;
+  minutesToday(): number;
+  hasUsageAccess(): boolean;
+  isServiceEnabled(): boolean;
+  openUsageAccess(): void;
+  openAccessibility(): void;
+  openAppDetails(): void;
+};
+
+export default requireNativeModule<StudyLockAndroid>("StudyLockAndroid");

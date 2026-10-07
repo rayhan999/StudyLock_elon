@@ -1,0 +1,6 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "modules": ["studylock.com.app.lock.StudyLockAndroidModule"]
+  }
+}
