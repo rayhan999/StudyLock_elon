@@ -16,7 +16,7 @@
     <service
       android:name="studylock.com.app.lock.BlockService"
       android:exported="false"
-      android:label="StudyLock"
+      android:label="Sanalukko"
       android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
       <intent-filter>
         <action android:name="android.accessibilityservice.AccessibilityService" />

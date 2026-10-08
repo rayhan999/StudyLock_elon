@@ -12,7 +12,7 @@ export default function App() {
   const [goal, setGoal] = useState(getGoal);
   const [picker, setPicker] = useState<Picker>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [studyLockPicked, setStudyLockPicked] = useState(false);
+  const [studyLockPicked, setSanalukkoPicked] = useState(false);
   const [, refresh] = useState(0);
 
   const tick = useCallback(() => {
@@ -62,9 +62,9 @@ export default function App() {
   if (auth !== RNDA.AuthorizationStatus.approved) {
     return (
       <Screen>
-        <Text style={styles.h1}>StudyLock</Text>
+        <Text style={styles.h1}>Sanalukko</Text>
         <Text style={styles.p}>
-          Every day at midnight StudyLock locks all your apps except your study apps and a few you always need. Study
+          Every day at midnight Sanalukko locks all your apps except your study apps and a few you always need. Study
           for your daily goal and everything unlocks until the next day.
         </Text>
         <Text style={styles.p}>
@@ -72,7 +72,7 @@ export default function App() {
           passcode.
         </Text>
         {auth === RNDA.AuthorizationStatus.denied && (
-          <Text style={styles.warn}>Screen Time access was denied. StudyLock can't work without it.</Text>
+          <Text style={styles.warn}>Screen Time access was denied. Sanalukko can't work without it.</Text>
         )}
         <Button title="Allow Screen Time access" onPress={() => RNDA.requestAuthorization("individual").catch(() => {})} />
       </Screen>
@@ -95,12 +95,12 @@ export default function App() {
 
         <Text style={styles.h2}>2. Always-allowed apps</Text>
         <Text style={styles.p}>
-          Never locked. Pick StudyLock itself, Phone, Messages, Maps, banking — and Safari if you study on a website.
+          Never locked. Pick Sanalukko itself, Phone, Messages, Maps, banking — and Safari if you study on a website.
         </Text>
         <Button title={`Choose allowed apps (${counts[ALLOWED] ?? 0} selected)`} onPress={() => setPicker(ALLOWED)} />
         <View style={styles.row}>
-          <Switch value={studyLockPicked} onValueChange={setStudyLockPicked} />
-          <Text style={styles.p}>I selected StudyLock in the allowed apps</Text>
+          <Switch value={studyLockPicked} onValueChange={setSanalukkoPicked} />
+          <Text style={styles.p}>I selected Sanalukko in the allowed apps</Text>
         </View>
 
         <Text style={styles.h2}>3. Daily goal</Text>

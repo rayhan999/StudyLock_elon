@@ -15,13 +15,20 @@ object Lock {
   fun study(c: Context): Set<String> = prefs(c).getStringSet("study", emptySet())!!
   fun allowed(c: Context): Set<String> = prefs(c).getStringSet("allowed", emptySet())!!
   fun isSetUp(c: Context) = prefs(c).getBoolean("setup", false)
+  fun lockAt(c: Context) = prefs(c).getInt("lockAt", 0) // minutes after midnight
 
-  fun isLocked(c: Context) = isSetUp(c) && minutesToday(c) < goal(c)
+  // Locked from today's lock time until today's study goal is met.
+  fun isLocked(c: Context): Boolean {
+    if (!isSetUp(c)) return false
+    val now = Calendar.getInstance()
+    val nowMin = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
+    return nowMin >= lockAt(c) && minutesToday(c) < goal(c)
+  }
 
-  // Foreground time in study apps since local midnight, from Android's usage events.
+  // Foreground time since local midnight in StudyLock itself (elon.io runs inside it)
+  // plus any extra study apps, from Android's usage events.
   fun minutesToday(c: Context): Int {
-    val study = study(c)
-    if (study.isEmpty()) return 0
+    val study = study(c) + c.packageName
     val midnight = Calendar.getInstance().apply {
       set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
     }.timeInMillis

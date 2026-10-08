@@ -1,6 +1,6 @@
-# StudyLock
+# Sanalukko 🔒ä
 
-**Study first, scroll later.** StudyLock locks your distracting apps every day until you've spent your daily goal (default 30 min) in your study apps — like an online course such as [elon.io](https://elon.io). Hit the goal and everything unlocks until midnight.
+**Learn your language first, scroll later.** *Sanalukko* is Finnish for "word lock". Sanalukko locks your distracting apps every day until you've practised for your daily goal (default 30 min). The Finnish course [elon.io](https://elon.io) is built right into the app, so studying is one tap away. Hit the goal and everything unlocks until midnight.
 
 Built with Expo / React Native, with native code for Android and iOS.
 
@@ -8,18 +8,18 @@ Built with Expo / React Native, with native code for Android and iOS.
 
 | | Android | iOS |
 |---|---|---|
-| Counts study time | `UsageStatsManager` — foreground time in your study apps since midnight | Screen Time `DeviceActivity` threshold events (every 5 min) |
-| Blocks apps | Accessibility service bounces you back to StudyLock | Screen Time shields (`ManagedSettings`) |
-| Daily reset | Automatic — time is always counted from midnight | Monitor extension re-locks at 00:00 |
+| Counts study time | `UsageStatsManager` — time in Sanalukko (elon.io runs inside it) + optional extra study apps, since midnight | Screen Time `DeviceActivity` threshold events (every 5 min) |
+| Blocks apps | Accessibility service bounces you back to Sanalukko | Screen Time shields (`ManagedSettings`) |
+| When it locks | From your chosen lock time (e.g. 18:00) until the goal is met; resets at midnight | Monitor extension re-locks at 00:00 |
 | Status | ✅ Working build (APK) | ⏳ Waiting for Apple's Family Controls approval |
 
 Rules that keep it honest:
 
-- **Never blocked:** StudyLock, your study apps, the apps you mark "always allowed" (Phone, Messages, Maps…), plus the launcher, keyboard and system Settings.
+- **Never blocked:** Sanalukko, your study apps, the apps you mark "always allowed" (Phone, Messages, Maps…), plus the launcher, keyboard and system Settings.
 - **Settings are locked too** — goal and app lists can only be changed after today's goal is met.
-- Studying a website? On Android, open it in Chrome → ⋮ → **Add to Home screen**; it becomes its own app you can pick. On iOS, pick the website itself in the Screen Time picker.
+- **elon.io in the app** reopens on the last page you were on. Only elon.io (and its login pages) load inside, so the time really is study time.
 
-> StudyLock is a self-control tool, not a prison: you can always switch it off in system settings. For a strict lock, let someone else set your Screen Time / Digital Wellbeing passcode.
+> Sanalukko is a self-control tool, not a prison: you can always switch it off in system settings. For a strict lock, let someone else set your Screen Time / Digital Wellbeing passcode.
 
 ## Install on Android
 
@@ -28,7 +28,7 @@ Rules that keep it honest:
    npx eas-cli@latest build -p android --profile preview
    ```
 2. Open the build link on your phone and install the APK.
-3. In StudyLock, grant **Usage access** and enable the **Accessibility** service.
+3. In Sanalukko, grant **Usage access** and enable the **Accessibility** service.
    On Android 13+, if the toggle is greyed out ("Restricted setting"): App info → ⋮ → **Allow restricted settings**.
 4. Pick study apps + always-allowed apps, set a goal, tap **Start**.
 

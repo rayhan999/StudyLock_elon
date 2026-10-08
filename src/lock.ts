@@ -34,7 +34,7 @@ export async function applySetup(goal: number, lockNow: boolean) {
   RNDA.updateShield(
     {
       title: "Locked until you study",
-      subtitle: "Finish today's study goal to unlock your apps. Open StudyLock to see your progress.",
+      subtitle: "Finish today's study goal to unlock your apps. Open Sanalukko to see your progress.",
       primaryButtonLabel: "OK",
       iconSystemName: "lock.fill",
     },

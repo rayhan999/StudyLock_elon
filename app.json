@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "StudyLock",
+    "name": "Sanalukko",
     "slug": "studylock",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1A3F8F"
     },
     "platforms": [
       "ios",
@@ -42,7 +42,11 @@
       ]
     ],
     "android": {
-      "package": "studylock.com.app"
+      "package": "studylock.com.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1A3F8F"
+      }
     },
     "extra": {
       "eas": {

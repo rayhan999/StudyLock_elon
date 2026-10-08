@@ -35,12 +35,14 @@ class StudyLockAndroidModule : Module() {
         "study" to Lock.study(context).toList(),
         "allowed" to Lock.allowed(context).toList(),
         "setup" to Lock.isSetUp(context),
+        "lockAt" to Lock.lockAt(context),
       )
     }
 
-    Function("setConfig") { goal: Int, study: List<String>, allowed: List<String> ->
+    Function("setConfig") { goal: Int, lockAt: Int, study: List<String>, allowed: List<String> ->
       Lock.prefs(context).edit()
         .putInt("goal", goal)
+        .putInt("lockAt", lockAt)
         .putStringSet("study", study.toSet())
         .putStringSet("allowed", allowed.toSet())
         .putBoolean("setup", true)
@@ -48,6 +50,10 @@ class StudyLockAndroidModule : Module() {
     }
 
     Function("minutesToday") { Lock.minutesToday(context) }
+    Function("isLocked") { Lock.isLocked(context) }
+
+    Function("getLastUrl") { Lock.prefs(context).getString("lastUrl", null) }
+    Function("setLastUrl") { url: String -> Lock.prefs(context).edit().putString("lastUrl", url).apply() }
 
     Function("hasUsageAccess") {
       val ops = context.getSystemService(AppOpsManager::class.java)
