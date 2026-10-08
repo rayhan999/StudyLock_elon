@@ -91,6 +91,12 @@
         "projectId": "c52bd09b-4177-40e0-8be5-d6cb4b9972ae"
       }
     },
-    "owner": "sadek_999"
+    "owner": "sadek_999",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/c52bd09b-4177-40e0-8be5-d6cb4b9972ae"
+    }
   }
 }

@@ -17,45 +17,54 @@ const isAllowedUrl = (url: string) => {
   return !host || ALLOWED_HOSTS.some((h) => host === h || host.endsWith("." + h));
 };
 
-// Auto-dismisses elon.io's support interstitial (Headless UI dialog titled
-// "A small good deed, if you can" with a ~15s wait before the "Start lesson"
-// button appears). The dialog is client-rendered on lesson routes, so a
-// persistent MutationObserver + interval is used instead of a one-shot script —
-// this survives Next.js SPA navigation inside the WebView.
-// Hides the panel immediately (no flash) and clicks "Start lesson" as soon as
-// it exists, so Headless UI tears down the overlay/scroll-lock cleanly.
+// Auto-dismisses elon.io's support interstitial (Headless UI dialog with a ~15s
+// wait before the dismiss button appears). Copy rotates, so detection is
+// structural, not text-based: the dialog panel containing Erik's photo
+// (img src/alt with "erik" / "founder", stable asset — not the ad copy).
+// The guard hides that panel immediately and clicks the dismiss button
+// (never the donation CTA) as soon as it renders, so Headless UI tears down
+// the overlay/scroll-lock cleanly. Persistent MutationObserver + interval
+// survives Next.js SPA navigation inside the WebView.
 const ELON_AD_GUARD_JS = `(function() {
   if (window.__elonAdGuard) return true;
   window.__elonAdGuard = true;
-  var css = document.createElement('style');
-  css.textContent = 'div[id^="headlessui-dialog-panel"]{visibility:hidden !important;}';
-  (document.head || document.documentElement).appendChild(css);
-  function panelOf(node) {
-    if (!node || !node.closest) return null;
-    return node.closest('div[id^="headlessui-dialog"]')
-      || node.closest('[role="dialog"]')
-      || (node.parentElement && node.parentElement.parentElement);
+  function dialogRoot(panel) {
+    var r = panel.parentElement ? panel.parentElement.closest('div[id^="headlessui-dialog"], div[data-headlessui-state]') : null;
+    return r || panel;
   }
-  function isAdPanel(el) {
-    var t = (el.textContent || '');
-    return /good deed/i.test(t) || /Erik, building Elon\\.io solo/i.test(t);
+  function isAdPanel(panel) {
+    try {
+      // Stable fingerprint: Erik's photo. Copy (heading/paragraph/CTA) rotates.
+      if (panel.querySelector('img[src*="erik" i], img[alt*="Erik" i], img[alt*="founder" i], img[src*="/images/team/" i]')) return true;
+    } catch (e) {}
+    return false;
+  }
+  function pickDismissButton(panel) {
+    var btns = Array.prototype.slice.call(panel.querySelectorAll('button'));
+    if (!btns.length) return null;
+    var isCta = function (t) { return /deed|donat|support|contribut|coffee|sponsor|\\u2192/i.test(t); };
+    var avail = btns.filter(function (b) { return !b.disabled; });
+    if (!avail.length) return null;
+    var prefer = [/start lesson/i, /continue/i, /^close$/i, /skip/i, /not now/i, /dismiss/i];
+    for (var p = 0; p < prefer.length; p++) {
+      for (var i = 0; i < avail.length; i++) {
+        if (prefer[p].test(avail[i].textContent || '')) return avail[i];
+      }
+    }
+    // Fallback for rotated copy: last non-CTA button, else last button.
+    var nonCta = avail.filter(function (b) { return !isCta(b.textContent || ''); });
+    return nonCta.length ? nonCta[nonCta.length - 1] : avail[avail.length - 1];
   }
   function dismiss() {
     try {
-      // 1) "Start lesson" button is rendered (after the ~15s wait): click it.
-      var btns = document.querySelectorAll('button');
-      for (var i = 0; i < btns.length; i++) {
-        if (!/start lesson/i.test(btns[i].textContent || '')) continue;
-        var panel = panelOf(btns[i]);
-        if (panel && isAdPanel(panel)) { btns[i].click(); return; }
-      }
-      // 2) Wait phase (button not rendered yet): keep the ad panel hidden.
-      var headings = document.querySelectorAll('h3');
-      for (var j = 0; j < headings.length; j++) {
-        var h = headings[j];
-        if (!/good deed/i.test(h.textContent || '')) continue;
-        var p = panelOf(h);
-        if (p && isAdPanel(p)) p.style.setProperty('display', 'none', 'important');
+      var panels = document.querySelectorAll('div[id^="headlessui-dialog-panel"]');
+      for (var i = 0; i < panels.length; i++) {
+        var panel = panels[i];
+        if (!isAdPanel(panel)) continue;
+        var btn = pickDismissButton(panel);
+        if (btn) { btn.click(); return; }
+        // Wait phase (dismiss not rendered yet): hide whole dialog incl. backdrop.
+        dialogRoot(panel).style.setProperty('display', 'none', 'important');
       }
     } catch (e) {}
   }
@@ -168,7 +177,7 @@ export default function App() {
   if (!showSettings) {
     return (
       <StudyView
-        header={`${status} ${Math.min(minutes, config.goal)} / ${config.goal} min today`}
+        header={`${status} ${minutes} / ${config.goal} min today`}
         onSettings={() => setShowSettings(true)}
       />
     );
@@ -181,7 +190,7 @@ export default function App() {
         {locked ? "🔒 Apps locked" : goalMet ? "✅ Unlocked for today" : `🔓 Free until ${hhmm(config.lockAt)}`}
       </Text>
       <Text style={styles.big}>
-        {Math.min(minutes, config.goal)} / {config.goal} min studied
+        {minutes} / {config.goal} min studied
       </Text>
       {!goalMet ? (
         <Text style={styles.p}>Study on elon.io to unlock. Settings unlock once you reach today's goal.</Text>
