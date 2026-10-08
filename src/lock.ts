@@ -37,6 +37,12 @@ export async function applySetup(goal: number, lockNow: boolean) {
       subtitle: "Finish today's study goal to unlock your apps. Open Sanalukko to see your progress.",
       primaryButtonLabel: "OK",
       iconSystemName: "lock.fill",
+      backgroundColor: { red: 255, green: 244, blue: 230, alpha: 1 },
+      titleColor: { red: 26, green: 63, blue: 143, alpha: 1 },
+      subtitleColor: { red: 90, green: 100, blue: 128, alpha: 1 },
+      iconTint: { red: 255, green: 107, blue: 91, alpha: 1 },
+      primaryButtonBackgroundColor: { red: 26, green: 63, blue: 143, alpha: 1 },
+      primaryButtonLabelColor: { red: 255, green: 244, blue: 230, alpha: 1 },
     },
     { primary: { behavior: "close" } },
   );

@@ -13,6 +13,11 @@
         "buildType": "apk"
       },
       "channel": "preview"
+    },
+    "ios-dev": {
+      "distribution": "internal",
+      "credentialsSource": "local",
+      "channel": "preview"
     }
   },
   "submit": {

@@ -1,0 +1,35 @@
+{
+  "brand": "Sanalukko",
+  "tagline": "Learn your language first, scroll later",
+  "brief": "An app lock for Finnish learners: distracting apps stay locked each day until the study goal is met. It should feel disciplined but friendly, warm, and unmistakably Finnish.",
+  "adjectives": ["disciplined", "friendly", "warm", "Finnish"],
+  "criteria": "Success: reads as both 'ä' and 'lock' at a glance, holds up at 16 px, works in one colour, stands apart from blue study apps.",
+  "industry": "consumer-app",
+  "nav": ["How it works", "elon.io course", "Download"],
+  "brand_color": "#1A3F8F",
+  "tile_color": "#FFF4E6",
+  "greyscale": false,
+  "final": true,
+  "designer": "Sanalukko",
+  "concepts": [
+    {
+      "name": "Umlaut shackle",
+      "symbol": "symbol-color.svg",
+      "lockup": "lockup-horizontal.svg",
+      "stacked": "lockup-stacked.svg",
+      "symbol_on_tile": "symbol-color.svg",
+      "stacked_on_tile": "lockup-stacked.svg",
+      "symbol_on_dark": "symbol-reversed.svg",
+      "lockup_on_dark": "lockup-horizontal-reversed.svg",
+      "stacked_on_dark": "lockup-stacked-reversed.svg",
+      "idea": "The umlaut dots join into a shackle: ä becomes a lock.",
+      "rationale": [
+        "One shape carries both meanings of the name: sana (word, the ä) and lukko (lock)",
+        "Coral shackle = the part that opens when today's goal is met",
+        "Cream and coral stand out on a home screen full of blue study apps"
+      ]
+    }
+  ],
+  "recommendation": "Umlaut shackle in navy, coral and cream.",
+  "next_steps": ["Ship the new app icon", "Animate the shackle opening when the goal is met", "Professional trademark search"]
+}

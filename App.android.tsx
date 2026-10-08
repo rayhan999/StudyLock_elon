@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AppState, BackHandler, Button, FlatList, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { AppState, BackHandler, FlatList, Switch, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { WebView } from "react-native-webview";
 import Lock, { AppInfo } from "./modules/studylock-android";
+import { Btn, Logo, Progress, Screen, colors, styles } from "./src/ui";
 
 type Editing = "study" | "allowed" | null;
 
@@ -117,14 +118,14 @@ export default function App() {
   if (!usage || !service) {
     return (
       <Screen>
-        <Text style={styles.h1}>Sanalukko</Text>
+        <Logo />
         <Text style={styles.p}>
           Until you've studied for your daily goal, Sanalukko sends you back here whenever you open an app that isn't a
           study app or an always-allowed app. Your progress resets every midnight.
         </Text>
         <Text style={styles.h2}>{usage ? "✅" : "1."} Usage access</Text>
         <Text style={styles.p}>Lets Sanalukko measure time spent in your study apps.</Text>
-        {!usage && <Button title="Open usage access settings" onPress={() => Lock.openUsageAccess()} />}
+        {!usage && <Btn title="Open usage access settings" onPress={() => Lock.openUsageAccess()} />}
         <Text style={styles.h2}>{service ? "✅" : "2."} Accessibility service</Text>
         <Text style={styles.p}>
           Lets Sanalukko see which app is open so it can block it. If Android says the setting is restricted: go to
@@ -132,8 +133,8 @@ export default function App() {
         </Text>
         {!service && (
           <>
-            <Button title="Open accessibility settings" onPress={() => Lock.openAccessibility()} />
-            <Button title="Open Sanalukko app info" onPress={() => Lock.openAppDetails()} />
+            <Btn title="Open accessibility settings" onPress={() => Lock.openAccessibility()} />
+            <Btn title="Open Sanalukko app info" onPress={() => Lock.openAppDetails()} />
           </>
         )}
       </Screen>
@@ -144,22 +145,22 @@ export default function App() {
     <>
       <Text style={styles.h2}>Extra study apps (optional)</Text>
       <Text style={styles.p}>Time on elon.io inside Sanalukko always counts. Time in apps picked here counts too.</Text>
-      <Button title={`Choose study apps (${draft.study.length})`} onPress={() => setEditing("study")} />
+      <Btn title={`Choose study apps (${draft.study.length})`} onPress={() => setEditing("study")} />
       <Text style={styles.h2}>Always-allowed apps</Text>
       <Text style={styles.p}>Never blocked, e.g. Phone, Messages, Maps, banking.</Text>
-      <Button title={`Choose allowed apps (${draft.allowed.length})`} onPress={() => setEditing("allowed")} />
+      <Btn title={`Choose allowed apps (${draft.allowed.length})`} onPress={() => setEditing("allowed")} />
       <Text style={styles.h2}>Daily goal</Text>
       <View style={styles.row}>
-        <Button title="−" onPress={() => setDraft({ ...draft, goal: Math.max(5, draft.goal - 5) })} />
+        <Btn secondary title="−" onPress={() => setDraft({ ...draft, goal: Math.max(5, draft.goal - 5) })} />
         <Text style={styles.big}>{draft.goal} min / day</Text>
-        <Button title="+" onPress={() => setDraft({ ...draft, goal: Math.min(120, draft.goal + 5) })} />
+        <Btn secondary title="+" onPress={() => setDraft({ ...draft, goal: Math.min(120, draft.goal + 5) })} />
       </View>
       <Text style={styles.h2}>Lock starts at</Text>
       <Text style={styles.p}>Apps are free before this time. After it, they stay locked until you reach the goal.</Text>
       <View style={styles.row}>
-        <Button title="−" onPress={() => setDraft({ ...draft, lockAt: (draft.lockAt + 1410) % 1440 })} />
+        <Btn secondary title="−" onPress={() => setDraft({ ...draft, lockAt: (draft.lockAt + 1410) % 1440 })} />
         <Text style={styles.big}>{hhmm(draft.lockAt)}</Text>
-        <Button title="+" onPress={() => setDraft({ ...draft, lockAt: (draft.lockAt + 30) % 1440 })} />
+        <Btn secondary title="+" onPress={() => setDraft({ ...draft, lockAt: (draft.lockAt + 30) % 1440 })} />
       </View>
     </>
   );
@@ -169,7 +170,7 @@ export default function App() {
       <Screen>
         <Text style={styles.h1}>Set up</Text>
         {settings}
-        <Button title="Start — lock my apps now" onPress={save} />
+        <Btn title="Start — lock my apps now" onPress={save} />
       </Screen>
     );
   }
@@ -185,19 +186,20 @@ export default function App() {
 
   return (
     <Screen>
-      <Button title="← Back to elon.io" onPress={() => setShowSettings(false)} />
+      <Btn secondary title="← Back to elon.io" onPress={() => setShowSettings(false)} />
       <Text style={styles.h1}>
         {locked ? "🔒 Apps locked" : goalMet ? "✅ Unlocked for today" : `🔓 Free until ${hhmm(config.lockAt)}`}
       </Text>
       <Text style={styles.big}>
         {minutes} / {config.goal} min studied
       </Text>
+      <Progress value={minutes / config.goal} />
       {!goalMet ? (
         <Text style={styles.p}>Study on elon.io to unlock. Settings unlock once you reach today's goal.</Text>
       ) : (
         <>
           {settings}
-          <Button title="Save" onPress={save} />
+          <Btn title="Save" onPress={save} />
         </>
       )}
     </Screen>
@@ -220,11 +222,11 @@ function StudyView({ header, onSettings }: { header: string; onSettings: () => v
   }, [canGoBack]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar style="auto" />
+    <SafeAreaView style={styles.screen}>
+      <StatusBar style="dark" />
       <View style={[styles.row, styles.bar]}>
         <Text style={[styles.big, { flex: 1, fontSize: 17 }]}>{header}</Text>
-        <Button title="Settings" onPress={onSettings} />
+        <Btn secondary title="Settings" onPress={onSettings} />
       </View>
       <WebView
         ref={web}
@@ -257,12 +259,12 @@ function AppPicker(props: {
     props.onChange(on ? [...props.selected, pkg] : props.selected.filter((p) => p !== pkg));
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.screen}>
       <View style={[styles.row, styles.pad]}>
         <Text style={[styles.h1, { flex: 1 }]}>{props.title}</Text>
-        <Button title="Done" onPress={props.onDone} />
+        <Btn title="Done" onPress={props.onDone} />
       </View>
-      <TextInput style={[styles.search]} placeholder="Search apps" value={query} onChangeText={setQuery} />
+      <TextInput style={[styles.search]} placeholder="Search apps" placeholderTextColor={colors.muted} value={query} onChangeText={setQuery} />
       <FlatList
         data={shown}
         keyExtractor={(a) => a.packageName}
@@ -270,6 +272,7 @@ function AppPicker(props: {
           <View style={[styles.row, styles.pad]}>
             <Text style={[styles.p, { flex: 1 }]}>{item.label}</Text>
             <Switch
+              trackColor={{ true: colors.navy }}
               value={props.selected.includes(item.packageName)}
               onValueChange={(on) => toggle(item.packageName, on)}
             />
@@ -279,24 +282,3 @@ function AppPicker(props: {
     </SafeAreaView>
   );
 }
-
-function Screen({ children }: { children: React.ReactNode }) {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar style="auto" />
-      <ScrollView contentContainerStyle={styles.container}>{children}</ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: { padding: 24, gap: 12 },
-  bar: { paddingHorizontal: 16, paddingVertical: 8, borderBottomWidth: 1, borderColor: "#ddd" },
-  pad: { paddingHorizontal: 24, paddingVertical: 8 },
-  h1: { fontSize: 28, fontWeight: "700" },
-  h2: { fontSize: 18, fontWeight: "600", marginTop: 12 },
-  p: { fontSize: 15, color: "#555", flexShrink: 1 },
-  big: { fontSize: 22, fontWeight: "600" },
-  row: { flexDirection: "row", alignItems: "center", gap: 12 },
-  search: { marginHorizontal: 24, padding: 12, borderWidth: 1, borderColor: "#ccc", borderRadius: 8 },
-});

@@ -42,3 +42,6 @@ yarn-error.*
 
 
 .env
+# signing credentials (local only)
+credentials/
+credentials.json
