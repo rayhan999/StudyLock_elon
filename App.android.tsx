@@ -17,6 +17,54 @@ const isAllowedUrl = (url: string) => {
   return !host || ALLOWED_HOSTS.some((h) => host === h || host.endsWith("." + h));
 };
 
+// Auto-dismisses elon.io's support interstitial (Headless UI dialog titled
+// "A small good deed, if you can" with a ~15s wait before the "Start lesson"
+// button appears). The dialog is client-rendered on lesson routes, so a
+// persistent MutationObserver + interval is used instead of a one-shot script —
+// this survives Next.js SPA navigation inside the WebView.
+// Hides the panel immediately (no flash) and clicks "Start lesson" as soon as
+// it exists, so Headless UI tears down the overlay/scroll-lock cleanly.
+const ELON_AD_GUARD_JS = `(function() {
+  if (window.__elonAdGuard) return true;
+  window.__elonAdGuard = true;
+  var css = document.createElement('style');
+  css.textContent = 'div[id^="headlessui-dialog-panel"]{visibility:hidden !important;}';
+  (document.head || document.documentElement).appendChild(css);
+  function panelOf(node) {
+    if (!node || !node.closest) return null;
+    return node.closest('div[id^="headlessui-dialog"]')
+      || node.closest('[role="dialog"]')
+      || (node.parentElement && node.parentElement.parentElement);
+  }
+  function isAdPanel(el) {
+    var t = (el.textContent || '');
+    return /good deed/i.test(t) || /Erik, building Elon\\.io solo/i.test(t);
+  }
+  function dismiss() {
+    try {
+      // 1) "Start lesson" button is rendered (after the ~15s wait): click it.
+      var btns = document.querySelectorAll('button');
+      for (var i = 0; i < btns.length; i++) {
+        if (!/start lesson/i.test(btns[i].textContent || '')) continue;
+        var panel = panelOf(btns[i]);
+        if (panel && isAdPanel(panel)) { btns[i].click(); return; }
+      }
+      // 2) Wait phase (button not rendered yet): keep the ad panel hidden.
+      var headings = document.querySelectorAll('h3');
+      for (var j = 0; j < headings.length; j++) {
+        var h = headings[j];
+        if (!/good deed/i.test(h.textContent || '')) continue;
+        var p = panelOf(h);
+        if (p && isAdPanel(p)) p.style.setProperty('display', 'none', 'important');
+      }
+    } catch (e) {}
+  }
+  new MutationObserver(dismiss).observe(document.documentElement, { childList: true, subtree: true, attributes: true });
+  setInterval(dismiss, 500);
+  dismiss();
+  return true;
+})();true;`;
+
 export default function App() {
   const [, refresh] = useState(0);
   const [config, setConfig] = useState(Lock.getConfig);
@@ -174,6 +222,8 @@ function StudyView({ header, onSettings }: { header: string; onSettings: () => v
         source={{ uri: startUrl }}
         style={{ flex: 1 }}
         setSupportMultipleWindows={false}
+        injectedJavaScriptBeforeContentLoaded={ELON_AD_GUARD_JS}
+        injectedJavaScript={ELON_AD_GUARD_JS}
         onShouldStartLoadWithRequest={(r) => isAllowedUrl(r.url)}
         onNavigationStateChange={(s) => {
           setCanGoBack(s.canGoBack);
